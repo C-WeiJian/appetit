@@ -67,7 +67,7 @@ server.put('/belt', (req, res, next) => {
         // collection.findOneAndUpdate(query, body, opts)
         //     .then(doc => res.send(204))
         //     .catch(err => res.send(500, err))
-        res.send(204)
+        res.json(req.body);
         next()
 
     })
