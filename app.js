@@ -1,6 +1,7 @@
 var restify = require('restify');
 var builder = require('botbuilder');
 var azure = require('botbuilder-azure');
+var moment = require('moment');
 
 // Setup DB
 
@@ -38,7 +39,7 @@ server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
  
 
-server.put('/todos/:id', (req, res, next) => {
+server.put('/belt', (req, res, next) => {
 
         // extract data from body and add timestamps
         const data = Object.assign({}, req.body, {
@@ -46,12 +47,19 @@ server.put('/todos/:id', (req, res, next) => {
         })
 
         // build out findOneAndUpdate variables to keep things organized
-        let query = { _id: req.params.id },
-            body  = { $set: data },
+        let body  = { $set: data },
             opts  = {
                 returnOriginal: false,
                 upsert: true
             }
+
+        // let query = { _id: req.params.id },
+        //     body  = { $set: data },
+        //     opts  = {
+        //         returnOriginal: false,
+        //         upsert: true
+        //     }     
+           
 		console.log(req.params);
 		console.log(req.body.name);
 		//console.log(body);
@@ -147,6 +155,7 @@ bot.dialog('/orderFood', [
         if(!session.userData.iknowyou) session.userData.iknowyou = 0;
         session.userData.iknowyou++;
         session.send(`${session.userData.iknowyou}`);
+        // moment(session.dialogData.reservationDate).format('LT');
         // Process request and display reservation details
         session.send(`Reservation confirmed. Reservation details: <br/>Date/Time: ${session.dialogData.reservationDate} <br/>Party size: ${session.dialogData.partySize} <br/>Reservation name: ${session.dialogData.reservationName}`);
         session.endDialog();

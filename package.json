@@ -11,6 +11,7 @@
   "dependencies": {
     "botbuilder": "^3.12.0",
     "botbuilder-azure": "^3.0.4",
+    "moment": "^2.19.2",
     "restify": "^6.3.2"
   }
 }
