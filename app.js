@@ -6,9 +6,9 @@ var moment = require('moment');
 // Setup DB
 
 var documentDbOptions = {
-    host: 'https://appetitdb.documents.azure.com:443/', 
-    masterKey: '9ToGZogeCBixsK5LP4HZw1Bj5bugeBKDYmypBBw4NTpcrYvOxnulIxxBcG0RG4BEBqWrCJBX4h07pDUScYaFyg==', 
-    database: 'botdocs',   
+    host: 'https://appetitdb.documents.azure.com:443/',
+    masterKey: '9ToGZogeCBixsK5LP4HZw1Bj5bugeBKDYmypBBw4NTpcrYvOxnulIxxBcG0RG4BEBqWrCJBX4h07pDUScYaFyg==',
+    database: 'botdocs',
     collection: 'botdata'
 };
 
@@ -37,7 +37,7 @@ server.get('/', restify.plugins.serveStatic({
 server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
- 
+
 
 server.put('/belt', (req, res, next) => {
 
@@ -58,8 +58,8 @@ server.put('/belt', (req, res, next) => {
         //     opts  = {
         //         returnOriginal: false,
         //         upsert: true
-        //     }     
-           
+        //     }
+
 		console.log(req.params);
 		console.log(req.body.name);
 		//console.log(body);
@@ -229,9 +229,11 @@ bot.dialog('/sendOrder', [
       },
     function (session, result){
       mealTime = builder.EntityRecognizer.resolveTime([result.response]);
-      session.send("Alright, your order for " + session.dialogData.orderItem + " has been sent to the kitchen! I'll see you at at " + mealTime.getHours()+ mealTime.getMinutes() + "H. :)");
-      session.userData.orderItem = session.dialogData.orderItem;
       session.userData.mealTime = mealTime;
+
+      mealTime = moment(mealTime);
+      session.send("Alright, your order for " + session.dialogData.orderItem + " has been sent to the kitchen! I'll see you at at " + mealTime.format('LT') + ". :)");
+      session.userData.orderItem = session.dialogData.orderItem;
       session.endDialog();
     }
 ]);
