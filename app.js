@@ -59,7 +59,7 @@ server.put('/belt', (req, res, next) => {
         //         returnOriginal: false,
         //         upsert: true
         //     }
-
+        //sendProactiveMessage(badsave);
 		console.log(req.params);
 		console.log(req.body.name);
 		//console.log(body);
@@ -70,7 +70,16 @@ server.put('/belt', (req, res, next) => {
         res.json(req.body);
         next()
 
+
     })
+
+// Do GET this endpoint to delivey a notification
+server.get('/trigger', (req, res, next) => {
+    sendProactiveMessage(badsave);
+    res.send('triggered');
+    next();
+  }
+);
 
 server.listen(process.env.port || 3978, function () {
     console.log('%s listening to %s', server.name, server.url);
@@ -98,6 +107,7 @@ server.post('/api/messages', connector.listen());
 
 var intents = new builder.IntentDialog({recognizers:[recogniser]});
 intents.matches(/\b(hi|hello|hey|sup)\b/i,'/sayHi');
+intents.matches(/\b(rememberme)\b/i,'/rememberme');
 //intents.matches(/\b(yes|yup|okay)\b/i,'/sayYes');
 //intents.matches(/\b(no)\b/i,'/sayNo');
 intents.matches('viewMenu', '/viewMenu');
@@ -238,6 +248,25 @@ bot.dialog('/sendOrder', [
     }
 ]);
 
+function sendProactiveMessage(address) {
+    var msg = new builder.Message().address(address);
+    msg.text('Hello, this is a notification');
+    msg.textLocale('en-US');
+    bot.send(msg);
+}
+
+//bad code
+var badsave;
+
+bot.dialog('/rememberme', function(session, args) {
+    var savedAddress = session.message.address;
+    badsave = savedAddress;
+    // (Save this information somewhere that it can be accessed later, such as in a database, or session.userData)
+    session.userData.savedAddress = savedAddress;
+
+    var message = 'Hello user, good to meet you! I now know your address and can send you notifications in the future.';
+    session.send(message);
+})
 
 
 
