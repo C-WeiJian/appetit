@@ -33,6 +33,37 @@ server.get('/', restify.plugins.serveStatic({
  default: '/index.html'
 }));
 
+server.use(restify.plugins.acceptParser(server.acceptable));
+server.use(restify.plugins.queryParser());
+server.use(restify.plugins.bodyParser());
+ 
+
+server.put('/todos/:id', (req, res, next) => {
+
+        // extract data from body and add timestamps
+        const data = Object.assign({}, req.body, {
+            updated: new Date()
+        })
+
+        // build out findOneAndUpdate variables to keep things organized
+        let query = { _id: req.params.id },
+            body  = { $set: data },
+            opts  = {
+                returnOriginal: false,
+                upsert: true
+            }
+		console.log(req.params);
+		console.log(req.body.name);
+		//console.log(body);
+        // find and update document based on passed in id (via route)
+        // collection.findOneAndUpdate(query, body, opts)
+        //     .then(doc => res.send(204))
+        //     .catch(err => res.send(500, err))
+        res.send(204)
+        next()
+
+    })
+
 server.listen(process.env.port || 3978, function () {
     console.log('%s listening to %s', server.name, server.url); 
 });
@@ -58,7 +89,7 @@ var recogniser = new builder.LuisRecognizer(LuisModelUrl);
 server.post('/api/messages', connector.listen());
 
 var intents = new builder.IntentDialog({recognizers:[recogniser]});
-//intents.matches(/\b(hi|hello|hey|sup)\b/i,'/sayHi');
+intents.matches(/\b(hi|hello|hey|sup)\b/i,'/sayHi');
 //intents.matches(/\b(yes|yup|okay)\b/i,'/sayYes');
 //intents.matches(/\b(no)\b/i,'/sayNo');
 intents.matches('orderFood', '/orderFood');
