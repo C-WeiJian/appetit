@@ -4,9 +4,6 @@ var builder = require('botbuilder');
 // Setup Restify Server
 var server = restify.createServer();
 
-// Handle Bot Framework messages
-server.post('/api/messages', connector.listen());
-
 // Serve a static web page
 
 //old cold
@@ -42,6 +39,9 @@ var bot = new builder.UniversalBot(connector);
 
 const LuisModelUrl = '	https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/9646960e-306f-4203-865f-5cb70c538658?subscription-key=3f76e6d2a6b54d3aa8957b995143bad7&timezoneOffset=0';
 var recogniser = new builder.LuisRecognizer(LuisModelUrl);
+
+// Handle Bot Framework messages
+server.post('/api/messages', connector.listen());
 
 var intents = new builder.IntentDialog({recognizers:[recogniser]});
 //intents.matches(/\b(hi|hello|hey|sup)\b/i,'/sayHi');
