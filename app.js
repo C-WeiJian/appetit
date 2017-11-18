@@ -59,7 +59,7 @@ server.put('/belt', (req, res, next) => {
         //         returnOriginal: false,
         //         upsert: true
         //     }
-        //sendProactiveMessage(badsave);
+        sendProactiveMessage(badsave);
 		console.log(req.params);
 		console.log(req.body.name);
 		//console.log(body);
