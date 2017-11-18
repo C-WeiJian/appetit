@@ -24,9 +24,18 @@ var server = restify.createServer();
 server.post('/api/messages', connector.listen());
 
 // Serve a static web page
-server.get(/.*/, restify.serveStatic({
-	'directory': '.',
-	'default': 'index.html'
+
+//old cold
+// server.get(/.*/, restify.serveStatic({
+// 	'directory': '.',
+// 	'default': 'index.html'
+// }));
+
+
+//new code
+server.get('/', restify.plugins.serveStatic({
+ directory: __dirname,
+ default: '/index.html'
 }));
 
 server.listen(process.env.port || 3978, function () {
