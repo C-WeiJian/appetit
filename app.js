@@ -120,6 +120,15 @@ intents.onDefault(builder.DialogAction.send("Sorry, I didn't understand what you
 
 bot.dialog('/', intents);
 
+bot.dialog('/sayHi', [
+    function (session){
+        session.sendTyping();
+        session.send("Hey there! I'm Appetit, your canteen butler.");
+        session.sendTyping();
+        session.endDialog("I can show you the menu, order you food and have it prepared when you plan to eat, but most importantly, I help you portion your food so you won't ever feel starved or bloated!");
+    }
+]);
+
 bot.dialog('/orderFood', [
     function (session) {
         session.send("Welcome to the dinner reservation.");
@@ -218,14 +227,7 @@ bot.dialog('/sendOrder', [
     }
 ]);
 
-bot.dialog('/sayHi', [
-    function (session){
-        session.sendTyping();
-        session.send("Hey there! I'm Appetit, your canteen butler.");
-        session.sendTyping();
-        session.endDialog("I can show you the menu, order you food and have it prepared when you plan to eat, but most importantly, I help you portion your food so you won't ever feel starved or bloated!");
-    }
-]);
+
 
 
 
