@@ -59,7 +59,7 @@ server.put('/belt', (req, res, next) => {
         //         returnOriginal: false,
         //         upsert: true
         //     }
-        sendProactiveMessage(badsave);
+        sendProactiveMessage(badsave, req.body.mass);
 		console.log(req.params);
 		console.log(req.body.name);
 		//console.log(body);
@@ -248,9 +248,9 @@ bot.dialog('/sendOrder', [
     }
 ]);
 
-function sendProactiveMessage(address) {
+function sendProactiveMessage(address, mass) {
     var msg = new builder.Message().address(address);
-    msg.text('Hello, this is a notification');
+    msg.text('Hello, you have ' + mass + 'g of wasted food. Bad!');
     msg.textLocale('en-US');
     bot.send(msg);
 }
