@@ -99,7 +99,9 @@ bot.dialog('/orderFood', [
     },
     function (session, results) {
         session.dialogData.reservationName = results.response;
-
+        if(!session.userData.iknowyou) session.userData.iknowyou = 0;
+        session.userData.iknowyou++;
+        session.send(`${session.userData.iknowyou}`);
         // Process request and display reservation details
         session.send(`Reservation confirmed. Reservation details: <br/>Date/Time: ${session.dialogData.reservationDate} <br/>Party size: ${session.dialogData.partySize} <br/>Reservation name: ${session.dialogData.reservationName}`);
         session.endDialog();
