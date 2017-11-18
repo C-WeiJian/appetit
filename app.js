@@ -1,5 +1,19 @@
 var restify = require('restify');
 var builder = require('botbuilder');
+var azure = require('botbuilder-azure');
+
+// Setup DB
+
+var documentDbOptions = {
+    host: 'https://appetitdb.documents.azure.com:443/', 
+    masterKey: '9ToGZogeCBixsK5LP4HZw1Bj5bugeBKDYmypBBw4NTpcrYvOxnulIxxBcG0RG4BEBqWrCJBX4h07pDUScYaFyg==', 
+    database: 'botdocs',   
+    collection: 'botdata'
+};
+
+var docDbClient = new azure.DocumentDbClient(documentDbOptions);
+
+var cosmosStorage = new azure.AzureBotStorage({ gzipData: false }, docDbClient);
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -35,7 +49,7 @@ var botConnectorOptions = {
 
 // Create bot
 var connector = new builder.ChatConnector(botConnectorOptions);
-var bot = new builder.UniversalBot(connector);
+var bot = new builder.UniversalBot(connector).set('storage', cosmosStorage);;
 
 const LuisModelUrl = '	https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/9646960e-306f-4203-865f-5cb70c538658?subscription-key=3f76e6d2a6b54d3aa8957b995143bad7&timezoneOffset=0';
 var recogniser = new builder.LuisRecognizer(LuisModelUrl);
@@ -71,8 +85,24 @@ intents.onDefault(builder.DialogAction.send("Sorry, I didn't understand what you
 bot.dialog('/', intents);
 
 bot.dialog('/orderFood', [
-    function (session){
-        session.endDialog("Sorry. No food.");
+    function (session) {
+        session.send("Welcome to the dinner reservation.");
+        builder.Prompts.time(session, "Please provide a reservation date and time (e.g.: June 6th at 5pm)");
+    },
+    function (session, results) {
+        session.dialogData.reservationDate = builder.EntityRecognizer.resolveTime([results.response]);
+        builder.Prompts.number(session, "How many people are in your party?");
+    },
+    function (session, results) {
+        session.dialogData.partySize = results.response;
+        builder.Prompts.text(session, "Whose name will this reservation be under?");
+    },
+    function (session, results) {
+        session.dialogData.reservationName = results.response;
+
+        // Process request and display reservation details
+        session.send(`Reservation confirmed. Reservation details: <br/>Date/Time: ${session.dialogData.reservationDate} <br/>Party size: ${session.dialogData.partySize} <br/>Reservation name: ${session.dialogData.reservationName}`);
+        session.endDialog();
     }
 ]);
 

@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "botbuilder": "^3.12.0",
+    "botbuilder-azure": "^3.0.4",
     "restify": "^6.3.2"
   }
 }
