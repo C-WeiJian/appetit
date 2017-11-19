@@ -435,7 +435,7 @@ function startProactiveDialog1(address) {
 
 bot.dialog('scen1', function (session, args, next) {
   session.endDialog('hello user1')
-  builder.Prompts.choice(session, "How was your meal?", ["Great!", "It can be improved. :("]);
+  builder.Prompts.choice(session, "How was your meal?", ["Great!", "It can be improved."]);
 }, function (session, results) {
     	session.sendTyping();
         session.dialogData.confirmation = results.response.entity;
