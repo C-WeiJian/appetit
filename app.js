@@ -115,6 +115,7 @@ intents.matches(/\b(rememberme)\b/i,'/rm');
 intents.matches('viewMenu', '/viewMenu');
 intents.matches('orderFood', '/orderFood');
 intents.matches('Cancel.Order', 'cancelOrder');
+intents.matches('feedback', '/feedback');
 //bot.beginDialogAction('sendOrder', '/sendOrder');
 //bot.beginDialogAction('confirmOrder', '/confirmOrder');
 //bot.beginDialogAction('confirmNo', '/confirmNo');
@@ -434,8 +435,22 @@ function startProactiveDialog1(address) {
 
 bot.dialog('scen1', function (session, args, next) {
   session.endDialog('hello user1')
-
-});
+  builder.Prompts.choice(session, "Do you want to place the order?", ["Yes", "No"]);
+}, function (session, results) {
+    	session.sendTyping();
+        session.dialogData.confirmation = results.response.entity;
+        if (session.dialogData.confirmation == "Yes") {
+        	session.send("Ok! Your order is cancelled.");
+        } else {
+        	session.send("Ok! Your order is cancelled.")
+        }
+        session.endDialog();
+        //mealTime = moment(session.dialogData.mealTime);
+        //session.send("Alright, your order for " + session.dialogData.orderItem + " has been sent to the kitchen! I'll see you at at " + mealTime.format('LT') + ". :)");
+        //session.userData.orderItem = session.dialogData.orderItem;
+        //session.userData.mealTime = mealTime;
+        
+    });
 
 function startProactiveDialog2(address) {
     bot.beginDialog(address, "*:scen2");
@@ -482,5 +497,12 @@ bot.dialog('scen3', function (session, args, next) {
 
 });
 
+bot.dialog('/feedback', [
+  function(session){
+    session.sendTyping();
+    session.send("Your preferences have been saved! Thank you.");
+    session.endDialog();
+  }
+]);
 
 
