@@ -394,7 +394,7 @@ function sendProactiveMessage(response) {
     if (response.mealStatus == "Ready"){
     	response.address.user.name
     	//session.send("You currently ordering the " + session.dialogData.orderItem + " to be served at " + mealTime.format('LT') + ".");
-    	msg.text('Your meal is now ready for collection at tray #21.' + response.address.user.name.);
+    	msg.text("Your meal is now ready for collection at tray #21." + response.address.user.name);
     	msg.textLocale('en-US');
     	bot.send(msg);
     }
