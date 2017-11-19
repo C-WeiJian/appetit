@@ -117,6 +117,7 @@ intents.matches('orderFood', '/orderFood');
 intents.matches('Cancel.Order', 'cancelOrder');
 intents.matches('feedback', '/feedback');
 intents.matches('getFunFact','/funFact');
+intents.matches('welcome', '/welcome');
 //bot.beginDialogAction('sendOrder', '/sendOrder');
 //bot.beginDialogAction('confirmOrder', '/confirmOrder');
 //bot.beginDialogAction('confirmNo', '/confirmNo');
@@ -542,3 +543,11 @@ var fact5 = ".The domestic recycling rate fell to 19 per cent in 2014 from 22 pe
 var fact6 = ".Do remember to thoroughly rinse or empty all recyclables before you send them for recycling.";
 var fact7 = ".Waste that has been contaminated with food such as waxed paper, used styrofoam or disposable plastic containers cannot be recycled. Cassette tapes, light bulbs, window glass, ceramics & tissue paper are also not recyclable.";
 var facts = [fact1, fact2, fact3, fact4, fact5, fact6, fact7];
+
+bot.dialog('/welcome', [
+  function(session){
+    session.sendTyping();
+    session.send("You're welcome!");
+    session.endDialog();
+  }
+]);
