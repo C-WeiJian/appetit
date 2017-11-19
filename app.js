@@ -391,6 +391,11 @@ function sendMenu(session) {
 
 function sendProactiveMessage(response) {
     var msg = new builder.Message().address(response.address);
+    if (response.mealStatus == "Ready"){
+    	msg.text('Your meal is now ready for collection at tray #21.');
+    	msg.textLocale('en-US');
+    	bot.send(msg);
+    }
     if (response.mealStatus == "Collected"){
     	msg.text('Bon Appetit!');
     	msg.textLocale('en-US');
