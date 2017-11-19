@@ -223,16 +223,16 @@ bot.dialog('/orderFood', [
         session.send("Alright, you currently ordering the " + session.dialogData.orderItem + " to be served at " + mealTime.format('LT') + ".");
         //session.userData.orderItem = session.dialogData.orderItem;
         //session.userData.mealTime = mealTime;
-	    var msg = new builder.Message(session)
-	    	.text("Confirm your order for " + session.dialogData.orderItem + " to be served at " + mealTime.format('LT') + ".")
-	    	.suggestedActions(
-	    		builder.SuggestedActions.create(
-	    				session, [
-	    					builder.CardAction.imBack(session, "1", "Place Order"),
-	    					builder.CardAction.imBack(session, "2", "Cancel")
-	    				]
-	    			));
-	    session.send(msg);
+	    // var msg = new builder.Message(session)
+	    // 	.text("Confirm your order for " + session.dialogData.orderItem + " to be served at " + mealTime.format('LT') + ".")
+	    // 	.suggestedActions(
+	    // 		builder.SuggestedActions.create(
+	    // 				session, [
+	    // 					builder.CardAction.imBack(session, "1", "Place Order"),
+	    // 					builder.CardAction.imBack(session, "2", "Cancel")
+	    // 				]
+	    // 			));
+	    // session.send(msg);
         builder.Prompts.choice(session, "Do you want to place the order?", ["Yes", "No"]);
     },
     function (session, results) {
