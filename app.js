@@ -442,7 +442,20 @@ function startProactiveDialog2(address) {
 }
 
 bot.dialog('scen2', function (session, args, next) {
-  session.endDialog('hello user2')
+  //session.endDialog('hello user2')
+  var msg = new builder.Message(session);
+    msg.attachmentLayout(builder.AttachmentLayout.carousel)
+    msg.attachments([
+        new builder.HeroCard(session)
+            .title("This Week in Review")
+            .subtitle("This week, you were one of the top 50 food wasters!")
+            .text("Rank: Foot Soldier (bottom 10%)     Leftovers: 253g")
+            .buttons([
+                builder.CardAction.imBack(session, "I want to reduce my portions", "Reduce Portions"),
+                builder.CardAction.imBack(session, "I want to reduce my portions", "Maintain Portions"),
+            ])
+    ]);
+    session.send(msg).endDialog();
 
 });
 
@@ -451,7 +464,21 @@ function startProactiveDialog3(address) {
 }
 
 bot.dialog('scen3', function (session, args, next) {
-  session.endDialog('hello user3')
+  //session.endDialog('hello user3')
+  var msg = new builder.Message(session);
+    msg.attachmentLayout(builder.AttachmentLayout.carousel)
+    msg.attachments([
+        new builder.HeroCard(session)
+            .title("This Week in Review")
+            .subtitle("You've saved 20% of food waste this week!")
+            .text("Rank: Amazonian (top 5%)    Leftovers: 34g")
+            .buttons([
+                builder.CardAction.imBack(session, "I want to reduce my portions", "Reduce Portions"),
+                builder.CardAction.imBack(session, "I want to reduce my portions", "Maintain Portions"),
+                builder.CardAction.imBack(session, "I want to increase my portions", "Increase Portions"),
+            ])
+    ]);
+    session.send(msg).endDialog();
 
 });
 
