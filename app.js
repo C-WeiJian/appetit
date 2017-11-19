@@ -366,7 +366,7 @@ function sendMenu(session) {
 // ]);
 
 function sendProactiveMessage(address, response) {
-    var msg = new builder.Message().address(address);
+    var msg = new builder.Message().address(response.address);
     if (response.mealStatus == "Collected"){
     	msg.text('Bon Appetit!');
     	msg.textLocale('en-US');
