@@ -380,7 +380,7 @@ function sendProactiveMessage(address, response) {
     	//do 3
     }
 
-    msg.text('Hello, you have ' + mass + 'g of wasted food. Bad!');
+    msg.text('Hello, you have ' + response.mass + 'g of wasted food. Bad!');
     msg.textLocale('en-US');
     bot.send(msg);
 }
