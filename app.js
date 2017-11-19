@@ -59,9 +59,9 @@ server.put('/belt', (req, res, next) => {
         //         returnOriginal: false,
         //         upsert: true
         //     }
-        sendProactiveMessage(badsave, req.body.mass);
-		console.log(req.params);
-		console.log(req.body.name);
+        sendProactiveMessage(badsave, req.body);
+		//console.log(req.params);
+		//console.log(req.body.name);
 		//console.log(body);
         // find and update document based on passed in id (via route)
         // collection.findOneAndUpdate(query, body, opts)
@@ -365,8 +365,21 @@ function sendMenu(session) {
 //     }
 // ]);
 
-function sendProactiveMessage(address, mass) {
+function sendProactiveMessage(address, response) {
     var msg = new builder.Message().address(address);
+    if (response.mealStatus == "Collected"){
+    	msg.text('Bon Appetit!');
+    	msg.textLocale('en-US');
+    	bot.send(msg);
+    }
+    else if (response.scenario == 1){
+    	//do 1
+    } else if (response.scenario == 2){
+    	//do 2
+    } else if (response.scenario == 3){
+    	//do 3
+    }
+
     msg.text('Hello, you have ' + mass + 'g of wasted food. Bad!');
     msg.textLocale('en-US');
     bot.send(msg);
