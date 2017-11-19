@@ -59,7 +59,7 @@ server.put('/belt', (req, res, next) => {
         //         returnOriginal: false,
         //         upsert: true
         //     }
-        sendProactiveMessage(badsave, req.body);
+        sendProactiveMessage(req.body);
 		//console.log(req.params);
 		//console.log(req.body.name);
 		//console.log(body);
@@ -74,12 +74,12 @@ server.put('/belt', (req, res, next) => {
     })
 
 // Do GET this endpoint to delivey a notification
-server.get('/trigger', (req, res, next) => {
-    sendProactiveMessage(badsave);
-    res.send('triggered');
-    next();
-  }
-);
+// server.get('/trigger', (req, res, next) => {
+//     sendProactiveMessage(badsave);
+//     res.send('triggered');
+//     next();
+//   }
+// );
 
 server.listen(process.env.port || 3978, function () {
     console.log('%s listening to %s', server.name, server.url);
@@ -365,7 +365,27 @@ function sendMenu(session) {
 //     }
 // ]);
 
-function sendProactiveMessage(address, response) {
+// function sendProactiveMessage(address, response) {
+//     var msg = new builder.Message().address(response.address);
+//     if (response.mealStatus == "Collected"){
+//     	msg.text('Bon Appetit!');
+//     	msg.textLocale('en-US');
+//     	bot.send(msg);
+//     }
+//     else if (response.scenario == 1){
+//     	//do 1
+//     } else if (response.scenario == 2){
+//     	//do 2
+//     } else if (response.scenario == 3){
+//     	//do 3
+//     }
+
+//     msg.text('Hello, you have ' + response.mass + 'g of wasted food. Bad!');
+//     msg.textLocale('en-US');
+//     bot.send(msg);
+// }
+
+function sendProactiveMessage(response) {
     var msg = new builder.Message().address(response.address);
     if (response.mealStatus == "Collected"){
     	msg.text('Bon Appetit!');
