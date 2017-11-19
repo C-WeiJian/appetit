@@ -392,7 +392,7 @@ function sendProactiveMessage(response) {
     	msg.textLocale('en-US');
     	bot.send(msg);
     }
-    else if (response.scenario == 1){
+    else if (response.scenario == 1 && response.mealStatus == "Returned"){
     	//do 1
     	msg.text('Hello, you have ' + response.mass + 'g of wasted food1111111. Bad!');
     	msg.suggestedActions(["Yes", "No"])
@@ -400,9 +400,9 @@ function sendProactiveMessage(response) {
     	bot.send(msg);
     	
 
-    } else if (response.scenario == 2){
+    } else if (response.scenario == 2 && response.mealStatus == "Returned"){
     	//do 2
-    } else if (response.scenario == 3){
+    } else if (response.scenario == 3 && response.mealStatus == "Returned"){
     	//do 3
     }
 
