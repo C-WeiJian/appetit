@@ -152,6 +152,7 @@ bot.dialog('/orderFood', [
     function (session, args, next) {
         orderItem = builder.EntityRecognizer.findEntity(args.entities, 'food')
         if (!orderItem) {
+        	sendMenu(session);
         	builder.Prompts.text(session, 'What would you like?');
         } else {
            session.dialogData.orderItem = orderItem.entity;
@@ -171,6 +172,7 @@ bot.dialog('/orderFood', [
 
     	f1 = [["spaghetti"],["turkey"],["lambshank"],["fishchip","fishandchip"],["salad"]]
     	f2 = ["Spaghetti Bolognese","Roast Turkey","Braised Lamb Shank","Traditional Fish & Chips","Caesar Salad"]
+
     	if (res.indexOf(f1[0][0])>=0){
     		res = f2[0]
     	}
@@ -230,7 +232,14 @@ bot.dialog('/orderFood', [
         //session.userData.mealTime = mealTime;
         
     }
-]);
+]).cancelAction('cancelAction', 'Ok! Feel free to ask me any other questions.', {
+    matches: /^nevermind$|^nothing$|^cancel$|^cancel.*order/i
+}).reloadAction('startOver', 'Ok, starting over.', {
+    matches: /^start over$/i,
+    dialogArgs: {
+        isReloaded: true
+    }
+});
 
 bot.dialog('askForDateTime', [
     function (session) {
