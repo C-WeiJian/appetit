@@ -150,7 +150,7 @@ bot.dialog('/sayHi', [
         session.send("Hey there! I'm Appetit, your canteen butler.");
         session.sendTyping();
         session.endDialog("I can show you the menu, order you food and have it prepared when you plan to eat, but most importantly, I help you portion your food so you won't ever feel starved or bloated!");
-        
+
     }
 ]);
 
@@ -463,8 +463,8 @@ bot.dialog('scen2', function (session, args, next) {
     msg.attachmentLayout(builder.AttachmentLayout.carousel)
     msg.attachments([
         new builder.HeroCard(session)
-            .title("Rank: Foot Soldier (bottom 10%)     Leftovers: 253g")
-            .subtitle("This week, you were one of the top 50 food wasters!")
+            .title("Weekly review: You are now an Foot Soldier (Bottom 15%)!")
+            .subtitle("Leftovers: 253g. You were one of the top 50 food wasters!")
             .text("")
             .buttons([
                 builder.CardAction.imBack(session, "I want to reduce my portions", "Reduce Portions"),
@@ -485,8 +485,8 @@ bot.dialog('scen3', function (session, args, next) {
     msg.attachmentLayout(builder.AttachmentLayout.carousel)
     msg.attachments([
         new builder.HeroCard(session)
-            .title("Rank: Amazonian (top 5%)    Leftovers: 34g")
-            .subtitle("You've saved 20% of food waste this week!")
+            .title("Weekly review: You are now an Amazonian (Top 5%)!")
+            .subtitle("Leftovers: 50g. You've saved 20% of food waste this week!")
             .text("")
             .buttons([
                 builder.CardAction.imBack(session, "I want to reduce my portions", "Reduce Portions"),
