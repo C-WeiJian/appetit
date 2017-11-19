@@ -480,7 +480,7 @@ bot.dialog('scen2', function (session, args, next) {
             .text("")
             .images([
                
-                    builder.CardImage.create(session, "https://memegenerator.net/img/instances/61598992/surely-you-can-do-better-than-that-cant-you.jpg")
+                    builder.CardImage.create(session, "https://uproxx.files.wordpress.com/2016/09/terry-crews.jpg")
                 ])
             .buttons([
                 builder.CardAction.imBack(session, "I want to reduce my portions", "Reduce Portions"),
@@ -530,6 +530,7 @@ bot.dialog('/feedback', [
 //
 bot.dialog('/funFact', [
     function (session){
+    	session.sendTyping();
         var index = Math.floor(Math.random()*7);
         session.endDialog(facts[index]);
     }
