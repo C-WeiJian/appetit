@@ -220,7 +220,7 @@ bot.dialog('/orderFood', [
         session.dialogData.mealTime = builder.EntityRecognizer.resolveTime([results.response]);
         mealTime = moment(session.dialogData.mealTime);
         //consider adding card
-        session.send("Alright, you currently ordering the " + session.dialogData.orderItem + " to be served at " + mealTime.format('LT') + ".");
+        session.send("You currently ordering the " + session.dialogData.orderItem + " to be served at " + mealTime.format('LT') + ".");
         //session.userData.orderItem = session.dialogData.orderItem;
         //session.userData.mealTime = mealTime;
 	    // var msg = new builder.Message(session)
