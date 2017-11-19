@@ -59,6 +59,8 @@ server.put('/belt', (req, res, next) => {
         //         returnOriginal: false,
         //         upsert: true
         //     }
+        startProactiveDialog1(badsave);
+
         sendProactiveMessage(req.body);
 		//console.log(req.params);
 		//console.log(req.body.name);
@@ -394,15 +396,14 @@ function sendProactiveMessage(response) {
     }
     else if (response.scenario == 1 && response.mealStatus == "Returned"){
     	//do 1
-    	msg.text('Hello, you have ' + response.mass + 'g of wasted food1111111. Bad!');
-    	msg.suggestedActions(["Yes", "No"])
-    	msg.textLocale('en-US');
-    	bot.send(msg);
+    	startProactiveDialog1(response.address);
     	
 
     } else if (response.scenario == 2 && response.mealStatus == "Returned"){
+    	startProactiveDialog2(response.address);
     	//do 2
     } else if (response.scenario == 3 && response.mealStatus == "Returned"){
+    	startProactiveDialog3(response.address);
     	//do 3
     }
 
@@ -410,6 +411,8 @@ function sendProactiveMessage(response) {
     // msg.textLocale('en-US');
     // bot.send(msg);
 }
+
+
 
 //bad code
 var badsave;
@@ -425,238 +428,32 @@ bot.dialog('/rm', function(session, args) {
     session.endDialog();
 })
 
+function startProactiveDialog1(address) {
+    bot.beginDialog(address, "*:scen1");
+}
+
+bot.dialog('scen1', function (session, args, next) {
+  session.endDialog('hello user')
+
+});
+
+function startProactiveDialog2(address) {
+    bot.beginDialog(address, "*:scen2");
+}
+
+bot.dialog('scen2', function (session, args, next) {
+  session.endDialog('hello user')
+
+});
+
+function startProactiveDialog3(address) {
+    bot.beginDialog(address, "*:scen3");
+}
+
+bot.dialog('scen3', function (session, args, next) {
+  session.endDialog('hello user')
+
+});
 
 
 
-
-//DELETE USELESS CODE AFTER THIS
-
-// bot.dialog('/sayYes',[
-//     function (session) {
-//         if(want){
-//         session.beginDialog('/getLoc');
-//         want = false;
-//     }
-//     }
-// ]);
-//
-// bot.dialog('/sayNo',[
-//     function (session) {
-//         if(want){
-//         session.send("Awwww. Do tell me if you change your mind.")
-//         session.send("Anyway, here are some cool things you could do with your used stuff.")
-//         var cards = [];
-//         cards.push(new builder.HeroCard(session)
-//             .title("Here are 25 things you can make with water bottles!")
-//             .subtitle("Creative upcycling projects")
-//             .images([
-//                     //handle if thumbnail is empty
-//                     builder.CardImage.create(session, "http://d2droglu4qf8st.cloudfront.net/2015/02/207529/soda-chande-1sm_Medium_ID-863641.jpg?v=863641")
-//                 ])
-//             .buttons([
-//                     // Pressing this button opens a url to google maps
-//                     builder.CardAction.openUrl(session, "http://www.favecrafts.com/Green-Crafting/14-Easy-to-Make-Water-Bottle-Crafts", "Open article")
-//             ]));
-//         cards.push(new builder.HeroCard(session)
-//             .title("Turn your soup cans into a fun bowling game!")
-//             .subtitle("Creative upcycling projects")
-//             .images([
-//                     //handle if thumbnail is empty
-//                     builder.CardImage.create(session, "http://static.primecp.com/master_images/Papercraft/shredded%20paper%20frame%20art.jpg")
-//                 ])
-//             .buttons([
-//                     // Pressing this button opens a url to google maps
-//                     builder.CardAction.openUrl(session, "http://www.favecrafts.com/Papercrafts/Shredded-Paper-Framed-Art", "Open article")
-//             ]));
-//         cards.push(new builder.HeroCard(session)
-//             .title("Make a Denim Pocket Pillow from your old pair of jeans!")
-//             .subtitle("Creative upcycling projects")
-//             .images([
-//                     //handle if thumbnail is empty
-//                     builder.CardImage.create(session, "http://irepo.primecp.com/2016/03/275117/Denim-Pocket-Pillow_Large500_ID-1589179.jpg?v=1")
-//                 ])
-//             .buttons([
-//                     // Pressing this button opens a url to google maps
-//                     builder.CardAction.openUrl(session, "http://www.favecrafts.com/Decorating-Ideas/Denim-Pocket-Pillow", "Open article")
-//             ]));
-//         cards.push(new builder.HeroCard(session)
-//             .title("Turn your used cans into beverage coasters!")
-//             .subtitle("Creative upcycling projects")
-//             .images([
-//                     //handle if thumbnail is empty
-//                     builder.CardImage.create(session, "http://cf.theidearoom.net/wp-content/uploads/2011/06/soda-can-coasters-2_thumb.jpg")
-//                 ])
-//             .buttons([
-//                     // Pressing this button opens a url to google maps
-//                     builder.CardAction.openUrl(session, "http://www.theidearoom.net/diy-soda-can-coasters", "Open article")
-//             ]));
-//         var msg = new builder.Message(session)
-//             .textFormat(builder.TextFormat.xml)
-//             .attachmentLayout(builder.AttachmentLayout.carousel)
-//             .attachments(cards);
-//         session.endDialog(msg);}
-//         want = false;
-//     }
-// ]);
-//
-// bot.dialog('/sayHi', [
-//     function (session){
-//         session.endDialog("Hello there! I'm a smart recycling bot. You can ask me if an item can be recycled, find out about nearest recycling points, and I can also give useful information :D");
-//     }
-// ]);
-//
-// bot.dialog('/getLoc', [
-//     function (session){
-//         builder.Prompts.text(session, "Could you send me your location?");
-//     },
-//     function (session) {
-//         session.send("Getting your coordinates...");
-//         if(session.message.entities.length != 0){
-//             session.sendTyping();
-//             lat = session.message.entities[0].geo.latitude;
-//             lon = session.message.entities[0].geo.longitude;
-//             var results = 0;
-//             var upplat = lat+0.014;
-//             var lowlat = lat-0.014;
-//             var upplon = lon+0.014;
-//             var lowlon = lon-0.014;
-//             var url = "https://developers.onemap.sg/privateapi/themesvc/retrieveTheme?queryName=recyclingbins&token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjI4MSwidXNlcl9pZCI6MjgxLCJlbWFpbCI6Im9uZ2ppYXJ1aUBob3RtYWlsLmNvbSIsImZvcmV2ZXIiOmZhbHNlLCJpc3MiOiJodHRwOlwvXC8xMC4wLjMuMTE6ODA4MFwvYXBpXC92MlwvdXNlclwvc2Vzc2lvbiIsImlhdCI6MTQ4NDI4Mzk1NCwiZXhwIjoxNDg0NzE1OTU0LCJuYmYiOjE0ODQyODM5NTQsImp0aSI6IjIxYjhlODgxODQ1MmVlODVkZmU2NjRlOTU1YjI5M2I4In0.E7DM-ism_4Vt6JE4zElfsC6-QhAsldmPSGuMZH9AvgQ&extents="+lowlat+",%20"+lowlon+","+upplat+",%20"+upplon;
-//             // Build options for the request
-//             var options = {
-//                 uri: url,
-//                 json: true // Returns the response in json
-//             }
-//             rp(options).then(function (body){
-//                 console.log(body);
-//                 results = body.SrchResults.length;
-//                 if(results > 4) {
-//                     showLocationCards(session, body);
-//                 }
-//             }).catch(function (err){
-//                 // An error occurred and the request failed
-//                 console.log(err.message);
-//                 session.send("Argh, no recycle bins nearby. :( Try again?");
-//             }).finally(function () {
-//                 // This is executed at the end, regardless of whether the request is successful or not
-//                 session.endDialog();
-//             });
-//         }
-//         else{
-//             session.endDialog("Sorry, I didn't get your location.");
-//         }
-//     }
-// ]);
-//
-// function showLocationCards(session, body) {
-//     session.sendTyping();
-//     var cards = [];
-//     var list = 5;
-//     if (body.SrchResults.length < 5) list = body.SrchResults.length;
-//     if (body.SrchResults.length > 0) session.send("These are some nearby recycling bin locations.");
-//     for (i = 1; i <= list; i++) {
-//         var str = body.SrchResults[i].LatLng;
-//         var res = str.split(",");
-//         var distance = HaversineInKM(lat, lon, res[0], res[1]).toFixed(2);
-//
-//         cards.push(new builder.HeroCard(session)
-//             .title(body.SrchResults[i].ADDRESSBLOCKHOUSENUMBER+" "+body.SrchResults[i].ADDRESSSTREETNAME)
-//             .subtitle("Distance from here: "+distance+" km")
-//             .images([
-//                     //handle if thumbnail is empty
-//                     builder.CardImage.create(session, "https://maps.googleapis.com/maps/api/streetview?size=600x300&location="+res[0]+","+res[1]+"&heading=151.78&pitch=-0.76&key=AIzaSyCJkSMIsK3ZPQHrBByW_nJTlamB3Bqe5JY")
-//                 ])
-//             .buttons([
-//                     // Pressing this button opens a url to google maps
-//                     builder.CardAction.openUrl(session, "https://www.google.com/maps?saddr=My+Location&daddr="+res[0]+","+res[1], "Go there")
-//             ]));
-//     }
-//     var msg = new builder.Message(session)
-//         .textFormat(builder.TextFormat.xml)
-//         .attachmentLayout(builder.AttachmentLayout.carousel)
-//         .attachments(cards);
-//     session.send(msg);
-//
-// };
-//
-// bot.dialog('/giveImageAnalysis', [
-//     function (session){
-//         // Ask the user which category they would like
-//         // Choices are separated by |
-//         builder.Prompts.text(session, "Ok! Let me take a look at the object. :)");
-//     }, function (session, results, next){
-//         // The user chose a category
-//         if (session.message.attachments[0].contentUrl != false) {
-//            //Show user that we're processing their request by sending the typing indicator
-//             session.sendTyping();
-//             // Build the url we'll be calling to get top news
-//             var url = "https://api.projectoxford.ai/vision/v1.0/tag";
-//             // Build options for the request
-//             var options = {
-//                 method: 'POST', // thie API call is a post request
-//                 uri: url,
-//                 headers: {
-//                     'Ocp-Apim-Subscription-Key': '8f8a8f6cc5904b67ae4ac8e0f8d5dbcc',
-//                     'Content-Type': 'application/json'
-//                 },
-//                 body: {
-//                     url: session.message.attachments[0].contentUrl
-//                 },
-//                 json: true
-//             }
-//
-//             //Make the call
-//                 rp(options).then(function (body){
-//                     // The request is successful
-//                     console.log(body);
-//                     imageresults(session, results, body);
-//                 }).catch(function (err){
-//                     // An error occurred and the request failed
-//                     console.log(err.message);
-//                     session.send("Argh, something went wrong. :( Try again?");
-//                 }).finally(function () {
-//                     // This is executed at the end, regardless of whether the request is successful or not
-//                     session.endDialog();
-//                 });
-//         } else {
-//             // The user choses to quit
-//             session.endDialog("Hmmm. I can't see anything.");
-//         }
-//     }
-// ]);
-//
-// function imageresults(session, results, body){
-//     //session.send("Top news in " + results.response.entity + ": ");
-//     //Show user that we're processing by sending the typing indicator
-//     session.sendTyping();
-//     // The value property in body contains an array of all the returned articles
-//     var allArticles = body.tags;
-//     var finalresults = false;
-//     var leng = allArticles.length;
-//     console.log(leng);
-//     // Iterate through all 10 articles returned by the API
-//     for (var i = 0; i < leng; i++){
-//         var article = allArticles[i].name;
-//         var confid = allArticles[i].confidence;
-//         if (confid > 0){
-//             if(article == "drink" || article == "beverage" || article == "soft drink"){
-//                 finalresults = true;
-//             }
-//         }
-//     }
-//     if(finalresults){
-//         session.send("You can recycle it! There are recycling bins nearby. ");
-//         session.endDialog("Do you want to find the nearest recycling collection point?");
-//         want = true;
-//     }
-//     else{
-//         session.endDialog("Hmmm. I don't think you can recycle this.");
-//     }
-// }
-//
-// bot.dialog('/funFact', [
-//     function (session){
-//         var index = Math.floor(Math.random()*7);
-//         session.endDialog(facts[index]);
-//     }
-// ]);
-//
