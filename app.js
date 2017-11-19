@@ -112,9 +112,11 @@ intents.matches(/\b(rememberme)\b/i,'/rm');
 //intents.matches(/\b(no)\b/i,'/sayNo');
 intents.matches('viewMenu', '/viewMenu');
 intents.matches('orderFood', '/orderFood');
-bot.beginDialogAction('sendOrder', '/sendOrder');
-bot.beginDialogAction('confirmOrder', '/confirmOrder');
-bot.beginDialogAction('confirmNo', '/confirmNo');
+intents.matches('Cancel.Order', 'cancelOrder');
+//bot.beginDialogAction('sendOrder', '/sendOrder');
+//bot.beginDialogAction('confirmOrder', '/confirmOrder');
+//bot.beginDialogAction('confirmNo', '/confirmNo');
+
 //intents.matches('analyseImage', '/giveImageAnalysis');
 //intents.matches('getFunFact','/funFact');
 //intents.matches('getloc','/getLoc');
@@ -150,6 +152,7 @@ bot.dialog('/sayHi', [
 
 bot.dialog('/orderFood', [
     function (session, args, next) {
+    	session.sendTyping();
         orderItem = builder.EntityRecognizer.findEntity(args.entities, 'food')
         if (!orderItem) {
         	sendMenu(session);
@@ -160,6 +163,7 @@ bot.dialog('/orderFood', [
        }
     },
     function (session, results) {
+    	session.sendTyping();
     	//string.indexOf(substring)
     	if (session.dialogData.orderItem){
     		res = session.dialogData.orderItem;
@@ -190,14 +194,25 @@ bot.dialog('/orderFood', [
     	}
     	else {
     		session.send('Sorry, we do not have that on the menu today');
+    		session.send('Hold on, I will send you the menu.');
+    		session.sendTyping();
+    		session.dialogData.skip = 1;
     		//add button for menu
-    		session.endDialog();
+    		//session.endDialog();
+    		//session.cancelDialog(0, '/viewMenu'); 
+    		
     	}
-    	session.dialogData.orderItem = res;
+    	if(session.dialogData.skip != 1){
+    		session.dialogData.orderItem = res;
+    		session.beginDialog('askForDateTime');
+    	} else {
+    		session.cancelDialog(0, '/viewMenu'); 
+    	}
     	//session.send(`${res}`);
-        session.beginDialog('askForDateTime');
+        
     },
     function (session, results) {
+    	session.sendTyping();
         session.dialogData.mealTime = builder.EntityRecognizer.resolveTime([results.response]);
         mealTime = moment(session.dialogData.mealTime);
         //consider adding card
@@ -217,6 +232,7 @@ bot.dialog('/orderFood', [
         builder.Prompts.choice(session, "Do you want to place the order?", ["Yes", "No"]);
     },
     function (session, results) {
+    	session.sendTyping();
         session.dialogData.confirmation = results.response.entity;
         if (session.dialogData.confirmation == "Yes") {
         	session.userData.orderItem = session.dialogData.orderItem;
@@ -233,12 +249,22 @@ bot.dialog('/orderFood', [
         
     }
 ]).cancelAction('cancelAction', 'Ok! Feel free to ask me any other questions.', {
-    matches: /^nevermind$|^nothing$|^cancel$|^cancel.*order/i
+    matches: /^(cancel|nevermind)/i
 }).reloadAction('startOver', 'Ok, starting over.', {
     matches: /^start over$/i,
     dialogArgs: {
         isReloaded: true
     }
+});
+
+bot.dialog('cancelOrder', [
+    function (session) {
+        session.send("Ok! Your order is cancelled.")
+        session.endDialog;
+    }
+]).triggerAction({ 
+    matches: 'Order.Cancel',
+    confirmPrompt: "This will cancel the creation of the order you started. Are you sure?" 
 });
 
 bot.dialog('askForDateTime', [
@@ -314,30 +340,30 @@ function sendMenu(session) {
 //   }
 // ]);
 
-bot.dialog('/confirmNo', [
-  function(session, result){
-  	console.log(result.data);
-    if (result.data == "no") session.send("Ok! Feel free to ask me any other questions. :)")
-    session.endDialog();
-  }
-]);
+// bot.dialog('/confirmNo', [
+//   function(session, result){
+//   	console.log(result.data);
+//     if (result.data == "no") session.send("Ok! Feel free to ask me any other questions. :)")
+//     session.endDialog();
+//   }
+// ]);
 
-bot.dialog('/sendOrder', [
-    function (session, result){
-        session.sendTyping();
-        session.dialogData.orderItem = result.data;
-        builder.Prompts.time(session, "Great! What time will you be having lunch?");
-      },
-    function (session, result){
-      mealTime = builder.EntityRecognizer.resolveTime([result.response]);
-      session.userData.mealTime = mealTime;
+// bot.dialog('/sendOrder', [
+//     function (session, result){
+//         session.sendTyping();
+//         session.dialogData.orderItem = result.data;
+//         builder.Prompts.time(session, "Great! What time will you be having lunch?");
+//       },
+//     function (session, result){
+//       mealTime = builder.EntityRecognizer.resolveTime([result.response]);
+//       session.userData.mealTime = mealTime;
 
-      mealTime = moment(mealTime);
-      session.send("Alright, your order for " + session.dialogData.orderItem + " has been sent to the kitchen! I'll see you at at " + mealTime.format('LT') + ". :)");
-      session.userData.orderItem = session.dialogData.orderItem;
-      session.endDialogWithResult(mealTime);
-    }
-]);
+//       mealTime = moment(mealTime);
+//       session.send("Alright, your order for " + session.dialogData.orderItem + " has been sent to the kitchen! I'll see you at at " + mealTime.format('LT') + ". :)");
+//       session.userData.orderItem = session.dialogData.orderItem;
+//       session.endDialogWithResult(mealTime);
+//     }
+// ]);
 
 function sendProactiveMessage(address, mass) {
     var msg = new builder.Message().address(address);
@@ -595,13 +621,3 @@ bot.dialog('/rm', function(session, args) {
 //     }
 // ]);
 //
-// function HaversineInKM(lat1, long1, lat2, long2)
-// {
-//     var dlong = (long2 - long1) * _d2r;
-//     var dlat = (lat2 - lat1) * _d2r;
-//     var a = Math.pow(Math.sin(dlat / 2.0), 2.0) + Math.cos(lat1 * _d2r) * Math.cos(lat2 * _d2r) * Math.pow(Math.sin(dlong / 2.0), 2.0);
-//     var c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1.0 - a));
-//     var d = _eQuatorialEarthRadius * c;
-//
-//     return d;
-// }
