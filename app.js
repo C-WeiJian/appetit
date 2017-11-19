@@ -433,7 +433,7 @@ function startProactiveDialog1(address) {
 }
 
 bot.dialog('scen1', function (session, args, next) {
-  session.endDialog('hello user')
+  session.endDialog('hello user1')
 
 });
 
@@ -442,7 +442,7 @@ function startProactiveDialog2(address) {
 }
 
 bot.dialog('scen2', function (session, args, next) {
-  session.endDialog('hello user')
+  session.endDialog('hello user2')
 
 });
 
@@ -451,7 +451,7 @@ function startProactiveDialog3(address) {
 }
 
 bot.dialog('scen3', function (session, args, next) {
-  session.endDialog('hello user')
+  session.endDialog('hello user3')
 
 });
 
