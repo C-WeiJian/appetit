@@ -462,9 +462,9 @@ bot.dialog('scen2', function (session, args, next) {
     msg.attachmentLayout(builder.AttachmentLayout.carousel)
     msg.attachments([
         new builder.HeroCard(session)
-            .title("This Week in Review")
+            .title("Rank: Foot Soldier (bottom 10%)     Leftovers: 253g")
             .subtitle("This week, you were one of the top 50 food wasters!")
-            .text("Rank: Foot Soldier (bottom 10%)     Leftovers: 253g")
+            .text("")
             .buttons([
                 builder.CardAction.imBack(session, "I want to reduce my portions", "Reduce Portions"),
                 builder.CardAction.imBack(session, "I want to reduce my portions", "Maintain Portions"),
@@ -484,9 +484,9 @@ bot.dialog('scen3', function (session, args, next) {
     msg.attachmentLayout(builder.AttachmentLayout.carousel)
     msg.attachments([
         new builder.HeroCard(session)
-            .title("This Week in Review")
+            .title("Rank: Amazonian (top 5%)    Leftovers: 34g")
             .subtitle("You've saved 20% of food waste this week!")
-            .text("Rank: Amazonian (top 5%)    Leftovers: 34g")
+            .text("")
             .buttons([
                 builder.CardAction.imBack(session, "I want to reduce my portions", "Reduce Portions"),
                 builder.CardAction.imBack(session, "I want to reduce my portions", "Maintain Portions"),
