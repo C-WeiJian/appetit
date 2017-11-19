@@ -150,6 +150,7 @@ bot.dialog('/sayHi', [
         session.send("Hey there! I'm Appetit, your canteen butler.");
         session.sendTyping();
         session.endDialog("I can show you the menu, order you food and have it prepared when you plan to eat, but most importantly, I help you portion your food so you won't ever feel starved or bloated!");
+        
     }
 ]);
 
@@ -433,9 +434,10 @@ function startProactiveDialog1(address) {
     bot.beginDialog(address, "*:scen1");
 }
 
-bot.dialog('scen1', function (session, args, next) {
-   builder.Prompts.choice(session, "How was your meal?", ["Great!", "It can be improved."]);
-}, function (session, results) {
+bot.dialog('scen1', [
+	function (session, args, next) {
+   	builder.Prompts.choice(session, "How was your meal?", ["Great!", "It can be improved."]);
+   }, function (session, results) {
     	session.sendTyping();
         session.dialogData.confirmation = results.response.entity;
         if (session.dialogData.confirmation == "Great!") {
@@ -449,7 +451,7 @@ bot.dialog('scen1', function (session, args, next) {
         //session.userData.orderItem = session.dialogData.orderItem;
         //session.userData.mealTime = mealTime;
         
-    });
+    }]);
 
 function startProactiveDialog2(address) {
     bot.beginDialog(address, "*:scen2");
