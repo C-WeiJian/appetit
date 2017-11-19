@@ -116,6 +116,7 @@ intents.matches('viewMenu', '/viewMenu');
 intents.matches('orderFood', '/orderFood');
 intents.matches('Cancel.Order', 'cancelOrder');
 intents.matches('feedback', '/feedback');
+intents.matches('getFunFact','/funFact');
 //bot.beginDialogAction('sendOrder', '/sendOrder');
 //bot.beginDialogAction('confirmOrder', '/confirmOrder');
 //bot.beginDialogAction('confirmNo', '/confirmNo');
@@ -476,6 +477,10 @@ bot.dialog('scen2', function (session, args, next) {
             .title("Weekly review: You are now an Foot Soldier (Bottom 15%)!")
             .subtitle("Leftovers: 253g. You were one of the top 50 food wasters!")
             .text("")
+            .images([
+               
+                    builder.CardImage.create(session, "https://memegenerator.net/img/instances/61598992/surely-you-can-do-better-than-that-cant-you.jpg")
+                ])
             .buttons([
                 builder.CardAction.imBack(session, "I want to reduce my portions", "Reduce Portions"),
                 builder.CardAction.imBack(session, "I want to reduce my portions", "Maintain Portions"),
@@ -498,6 +503,10 @@ bot.dialog('scen3', function (session, args, next) {
             .title("Weekly review: You are now an Amazonian (Top 5%)!")
             .subtitle("Leftovers: 50g. You've saved 20% of food waste this week!")
             .text("")
+            .images([
+               
+                    builder.CardImage.create(session, "http://i0.kym-cdn.com/entries/icons/original/000/000/745/success.jpg")
+                ])
             .buttons([
                 builder.CardAction.imBack(session, "I want to reduce my portions", "Reduce Portions"),
                 builder.CardAction.imBack(session, "I want to reduce my portions", "Maintain Portions"),
@@ -518,3 +527,18 @@ bot.dialog('/feedback', [
 
 
 //
+bot.dialog('/funFact', [
+    function (session){
+        var index = Math.floor(Math.random()*7);
+        session.endDialog(facts[index]);
+    }
+]);
+
+var fact1 = "Food waste generates 3.3 billions tons of carbon dioxide, which accelerates global climate change.";
+var fact2 = "If wasted food was a country, it would be the third largest producer of carbon dioxide in the world, after the United States and China.";
+var fact3 = "Just one quarter of all wasted food could feed the 795 million undernourished people around the world who suffer from hunger.";
+var fact4 = "1.3 billion tons of food are wasted every year. This amounts to US$1 trillion dollars of wasted or lost food.";
+var fact5 = ".The domestic recycling rate fell to 19 per cent in 2014 from 22 per cent in 2010 :( So keep recycling!";
+var fact6 = ".Do remember to thoroughly rinse or empty all recyclables before you send them for recycling.";
+var fact7 = ".Waste that has been contaminated with food such as waxed paper, used styrofoam or disposable plastic containers cannot be recycled. Cassette tapes, light bulbs, window glass, ceramics & tissue paper are also not recyclable.";
+var facts = [fact1, fact2, fact3, fact4, fact5, fact6, fact7];
