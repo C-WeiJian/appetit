@@ -394,7 +394,7 @@ function sendProactiveMessage(response) {
     }
     else if (response.scenario == 1){
     	//do 1
-    	msg.text('Hello, you have ' + response.mass + 'g of wasted food. Bad!');
+    	msg.text('Hello, you have ' + response.mass + 'g of wasted food1111111. Bad!');
     	msg.suggestedActions(["Yes", "No"])
     	msg.textLocale('en-US');
     	bot.send(msg);
