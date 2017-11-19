@@ -435,14 +435,14 @@ function startProactiveDialog1(address) {
 
 bot.dialog('scen1', function (session, args, next) {
   session.endDialog('hello user1')
-  builder.Prompts.choice(session, "Do you want to place the order?", ["Yes", "No"]);
+  builder.Prompts.choice(session, "How was your meal?", ["Great!", "It can be improved. :("]);
 }, function (session, results) {
     	session.sendTyping();
         session.dialogData.confirmation = results.response.entity;
         if (session.dialogData.confirmation == "Yes") {
-        	session.send("Ok! Your order is cancelled.");
+        	session.send("It's our pleasure!");
         } else {
-        	session.send("Ok! Your order is cancelled.")
+        	session.send("Sorry. We will do our best to improve.")
         }
         session.endDialog();
         //mealTime = moment(session.dialogData.mealTime);
