@@ -59,7 +59,7 @@ server.put('/belt', (req, res, next) => {
         //         returnOriginal: false,
         //         upsert: true
         //     }
-        startProactiveDialog1(badsave);
+        //startProactiveDialog1(badsave);
 
         sendProactiveMessage(req.body);
 		//console.log(req.params);
@@ -392,8 +392,12 @@ function sendMenu(session) {
 function sendProactiveMessage(response) {
     var msg = new builder.Message().address(response.address);
     if (response.mealStatus == "Ready"){
+    	console.log(response.address.user.name);
+    	//tobeparsed = "'"+response.address+"'";
+    	//console.log(tobeparsed);
+    	//console.log(JSON.parse(tobeparsed));
     	//session.send("You currently ordering the " + session.dialogData.orderItem + " to be served at " + mealTime.format('LT') + ".");
-    	msg.text("Your meal is now ready for collection at tray #21.");
+    	msg.text("Hello "+ response.address.user.name + "! Your meal is now ready for collection at tray #21.");
     	msg.textLocale('en-US');
     	bot.send(msg);
     }
