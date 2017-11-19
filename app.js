@@ -175,6 +175,7 @@ bot.dialog('/orderFood', [
 bot.dialog('/viewMenu', [
     function (session){
         sendMenu(session);
+        session.endDialog();
     }
 ]);
 
@@ -217,17 +218,37 @@ function sendMenu(session) {
 bot.dialog('/confirmOrder', [
   function(session, result){
     console.log(result.data);
-    var item = result.data;
+    session.userData.orderItem = result.data;
     var msg = new builder.Message(session)
-    	.text("Confirm your order for " + item + "?")
+    	.text("Confirm your order for " + session.userData.orderItem + "?")
     	.suggestedActions(
     		builder.SuggestedActions.create(
     				session, [
-    					builder.CardAction.dialogAction(session, "sendOrder", item, "Yes"),
-    					builder.CardAction.dialogAction(session, "/", null, "No")
+    					builder.CardAction.imBack(session, "Yes", "Yes"),
+    					builder.CardAction.imBack(session, "No", "No")
     				]
     			));
+
     session.send(msg);
+    builder.Prompts.text(session, null);
+
+  },
+  function(session, result){
+    if (result.response){
+      if (result.response == "Yes"){
+        session.sendTyping();
+        builder.Prompts.time(session, "Great! What time will you be having lunch?");
+      } else if (result.response == "No") session.send('Sure, terminating...');
+    } else next();
+  },
+  function(session, result){
+    mealTime = builder.EntityRecognizer.resolveTime([result.response]);
+    session.userData.mealTime = mealTime;
+
+    mealTime = moment(mealTime);
+    session.send("Alright, your order for " + session.userData.orderItem + " has been sent to the kitchen! I'll see you at at " + mealTime.format('LT') + ". :)");
+    session.userData.orderItem = session.dialogData.orderItem;
+    session.endDialog();
   }
 ]);
 
@@ -258,15 +279,15 @@ function sendProactiveMessage(address, mass) {
 //bad code
 var badsave;
 
-bot.dialog('/rememberme', function(session, args) {
-    var savedAddress = session.message.address;
-    badsave = savedAddress;
-    // (Save this information somewhere that it can be accessed later, such as in a database, or session.userData)
-    session.userData.savedAddress = savedAddress;
-
-    var message = 'Hello user, good to meet you! I now know your address and can send you notifications in the future.';
-    session.send(message);
-})
+// bot.dialog('/rememberme', function(session, args) {
+//     var savedAddress = session.message.address;
+//     badsave = savedAddress;
+//     // (Save this information somewhere that it can be accessed later, such as in a database, or session.userData)
+//     session.userData.savedAddress = savedAddress;
+//
+//     var message = 'Hello user, good to meet you! I now know your address and can send you notifications in the future.';
+//     session.send(message);
+// })
 
 
 
