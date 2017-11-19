@@ -107,14 +107,13 @@ server.post('/api/messages', connector.listen());
 
 var intents = new builder.IntentDialog({recognizers:[recogniser]});
 intents.matches(/\b(hi|hello|hey|sup)\b/i,'/sayHi');
-intents.matches(/\b(rememberme)\b/i,'/rm');
+intents.matches(/\b(rememberme)\b/i,'/rememberme');
 //intents.matches(/\b(yes|yup|okay)\b/i,'/sayYes');
 //intents.matches(/\b(no)\b/i,'/sayNo');
 intents.matches('viewMenu', '/viewMenu');
 intents.matches('orderFood', '/orderFood');
 bot.beginDialogAction('sendOrder', '/sendOrder');
 bot.beginDialogAction('confirmOrder', '/confirmOrder');
-bot.beginDialogAction('confirmNo', '/confirmNo');
 //intents.matches('analyseImage', '/giveImageAnalysis');
 //intents.matches('getFunFact','/funFact');
 //intents.matches('getloc','/getLoc');
@@ -139,112 +138,51 @@ intents.onDefault(builder.DialogAction.send("Sorry, I didn't understand what you
 
 bot.dialog('/', intents);
 
+bot.dialog('/feedbackSubmit', [
+  function(session){
+
+  }
+]);
+
 bot.dialog('/sayHi', [
     function (session){
         session.sendTyping();
         session.send("Hey there! I'm Appetit, your canteen butler.");
         session.sendTyping();
+        sendProactiveMessage(badsave, 150);
         session.endDialog("I can show you the menu, order you food and have it prepared when you plan to eat, but most importantly, I help you portion your food so you won't ever feel starved or bloated!");
     }
 ]);
 
 bot.dialog('/orderFood', [
-    function (session, args, next) {
-        orderItem = builder.EntityRecognizer.findEntity(args.entities, 'food')
-        if (!orderItem) {
-        	builder.Prompts.text(session, 'What would you like?');
-        } else {
-           session.dialogData.orderItem = orderItem.entity;
-           next();
-       }
-    },
-    function (session, results) {
-    	//string.indexOf(substring)
-    	if (session.dialogData.orderItem){
-    		res = session.dialogData.orderItem;
-    	} else res = results.response;
-    	res = res.toLowerCase();
-    	res = res.replace(/\s/g, '');
-    	res = res.replace(/[^a-zA-Z ]/g, "")
-    	//session.send(`${res}`);
-
-
-    	f1 = [["spaghetti"],["turkey"],["lambshank"],["fishchip","fishandchip"],["salad"]]
-    	f2 = ["Spaghetti Bolognese","Roast Turkey","Braised Lamb Shank","Traditional Fish & Chips","Caesar Salad"]
-    	if (res.indexOf(f1[0][0])>=0){
-    		res = f2[0]
-    	}
-    	else if (res.indexOf(f1[1][0])>=0){
-    		res = f2[1]
-    	}
-    	else if (res.indexOf(f1[2][0])>=0){
-    		res = f2[2]
-    	}
-    	else if (res.indexOf(f1[3][0])>=0||res.indexOf(f1[3][1])>=0){
-    		res = f2[3]
-    	}
-    	else if (res.indexOf(f1[4][0])>=0){
-    		res = f2[4]
-    	}
-    	else {
-    		session.send('Sorry, we do not have that on the menu today');
-    		//add button for menu
-    		session.endDialog();
-    	}
-    	session.dialogData.orderItem = res;
-    	//session.send(`${res}`);
-        session.beginDialog('askForDateTime');
-    },
-    function (session, results) {
-        session.dialogData.mealTime = builder.EntityRecognizer.resolveTime([results.response]);
-        mealTime = moment(session.dialogData.mealTime);
-        //consider adding card
-        session.send("Alright, you currently ordering the " + session.dialogData.orderItem + " to be served at " + mealTime.format('LT') + ".");
-        //session.userData.orderItem = session.dialogData.orderItem;
-        //session.userData.mealTime = mealTime;
-	    var msg = new builder.Message(session)
-	    	.text("Confirm your order for " + session.dialogData.orderItem + " to be served at " + mealTime.format('LT') + ".")
-	    	.suggestedActions(
-	    		builder.SuggestedActions.create(
-	    				session, [
-	    					builder.CardAction.imBack(session, "1", "Place Order"),
-	    					builder.CardAction.imBack(session, "2", "Cancel")
-	    				]
-	    			));
-	    session.send(msg);
-        builder.Prompts.choice(session, "Do you want to place the order?", ["Yes", "No"]);
-    },
-    function (session, results) {
-        session.dialogData.confirmation = results.response.entity;
-        if (session.dialogData.confirmation == "Yes") {
-        	session.userData.orderItem = session.dialogData.orderItem;
-        	session.userData.mealTime = session.dialogData.mealTime;
-        	session.send("Alright, your order for " + session.dialogData.orderItem + " has been sent to the kitchen! I'll see you at at " + mealTime.format('LT') + ". :)");
-        } else {
-        	session.send("Ok! Your order is cancelled.")
-        }
-        session.endDialog();
-        //mealTime = moment(session.dialogData.mealTime);
-        //session.send("Alright, your order for " + session.dialogData.orderItem + " has been sent to the kitchen! I'll see you at at " + mealTime.format('LT') + ". :)");
-        //session.userData.orderItem = session.dialogData.orderItem;
-        //session.userData.mealTime = mealTime;
-        
-    }
-]);
-
-bot.dialog('askForDateTime', [
     function (session) {
-        builder.Prompts.time(session, "Great! What time will you be having lunch? (e.g.: 2pm)");
+        session.send("Welcome to the dinner reservation.");
+        builder.Prompts.time(session, "Please provide a reservation date and time (e.g.: June 6th at 5pm)");
     },
     function (session, results) {
-        session.endDialogWithResult(results);
+        session.dialogData.reservationDate = builder.EntityRecognizer.resolveTime([results.response]);
+        builder.Prompts.number(session, "How many people are in your party?");
+    },
+    function (session, results) {
+        session.dialogData.partySize = results.response;
+        builder.Prompts.text(session, "Whose name will this reservation be under?");
+    },
+    function (session, results) {
+        session.dialogData.reservationName = results.response;
+        if(!session.userData.iknowyou) session.userData.iknowyou = 0;
+        session.userData.iknowyou++;
+        session.send(`${session.userData.iknowyou}`);
+        // moment(session.dialogData.reservationDate).format('LT');
+        // Process request and display reservation details
+        session.send(`Reservation confirmed. Reservation details: <br/>Date/Time: ${session.dialogData.reservationDate} <br/>Party size: ${session.dialogData.partySize} <br/>Reservation name: ${session.dialogData.reservationName}`);
+        session.endDialog();
     }
 ]);
 
 bot.dialog('/viewMenu', [
     function (session){
         sendMenu(session);
-  		session.endDialog();
+        session.endDialog();
     }
 ]);
 
@@ -272,8 +210,7 @@ function sendMenu(session) {
                 ])
             .buttons([
                     //Pressing button orders this item
-                    builder.CardAction.imBack(session, "I would like to order "+curr.name, "Order item")//,
-                    //builder.CardAction.dialogAction(session, 'confirmOrder', curr.name, "Order item")
+                    builder.CardAction.dialogAction(session, 'confirmOrder', curr.name, "Order item")
             ]));
 
     }
@@ -285,30 +222,40 @@ function sendMenu(session) {
 
 };
 
-
-//deprecated
-// bot.dialog('/confirmOrder', [
-//   function(session, result){
-//     //console.log(result.data);
-//     var item = result.data;
-//     var msg = new builder.Message(session)
-//     	.text("Confirm your order for " + item + "?")
-//     	.suggestedActions(
-//     		builder.SuggestedActions.create(
-//     				session, [
-//     					builder.CardAction.dialogAction(session, "sendOrder", item, "Yes"),
-//     					builder.CardAction.dialogAction(session, "confirmNo", "no" , "No")
-//     				]
-//     			));
-//     session.send(msg);
-//     return null;
-//   }
-// ]);
-
-bot.dialog('/confirmNo', [
+bot.dialog('/confirmOrder', [
   function(session, result){
-  	console.log(result.data);
-    if (result.data == "no") session.send("Ok! Feel free to ask me any other questions. :)")
+    console.log(result.data);
+    session.userData.orderItem = result.data;
+    var msg = new builder.Message(session)
+    	.text("Confirm your order for " + session.userData.orderItem + "?")
+    	.suggestedActions(
+    		builder.SuggestedActions.create(
+    				session, [
+    					builder.CardAction.imBack(session, "Yes", "Yes"),
+    					builder.CardAction.imBack(session, "No", "No")
+    				]
+    			));
+
+    session.send(msg);
+    //not working! might need to use Luis?
+    builder.Prompts.text(session, null);
+
+  },
+  function(session, result){
+    if (result.response){
+      if (result.response == "Yes"){
+        session.sendTyping();
+        builder.Prompts.time(session, "Great! What time will you be having lunch?");
+      } else if (result.response == "No") session.send('Sure, terminating...');
+    } else next();
+  },
+  function(session, result){
+    mealTime = builder.EntityRecognizer.resolveTime([result.response]);
+    session.userData.mealTime = mealTime;
+
+    mealTime = moment(mealTime);
+    session.send("Alright, your order for " + session.userData.orderItem + " has been sent to the kitchen! I'll see you at at " + mealTime.format('LT') + ". :)");
+    session.userData.orderItem = session.dialogData.orderItem;
     session.endDialog();
   }
 ]);
@@ -326,21 +273,299 @@ bot.dialog('/sendOrder', [
       mealTime = moment(mealTime);
       session.send("Alright, your order for " + session.dialogData.orderItem + " has been sent to the kitchen! I'll see you at at " + mealTime.format('LT') + ". :)");
       session.userData.orderItem = session.dialogData.orderItem;
-      session.endDialogWithResult(mealTime);
+      session.endDialog();
     }
 ]);
 
 function sendProactiveMessage(address, mass) {
-    var msg = new builder.Message().address(address);
-    msg.text('Hello, you have ' + mass + 'g of wasted food. Bad!');
-    msg.textLocale('en-US');
+    //sendDay1(address,mass);
+    //sendWeek1(address);
+    sendWeek1(address);
+}
+
+function sendDay1(address, mass){
+  var msg = new builder.Message().address(address);
+  msg.text('Hello, you have ' + mass + 'g of wasted food. Bad!');
+  msg.textLocale('en-US');
+  bot.send(msg);
+}
+
+function sendWeek1(address) {
+    var msg = new builder.Message().address(address)
+    .addAttachment(
+      {
+      contentType: "application/vnd.microsoft.card.adaptive",
+      content: {
+        "type": "AdaptiveCard",
+        "version": "1.0",
+        "body": [
+          {
+            "type": "TextBlock",
+            "text": "Your Week in Review",
+            "size": "large",
+            "weight": "bolder"
+          },
+          {
+            "type": "TextBlock",
+            "text": "This week, you were one of the top 50 food wasters!"
+          },
+          {
+            "type": "ColumnSet",
+            "columns":[
+                {
+                    "items":[
+                        {
+                            "type":"TextBlock",
+                            "text":"Rank: Foot soldier (bottom 10%)"
+                        }
+                        ]
+                },
+                {
+                    "items":[
+                        {
+                            "type":"TextBlock",
+                            "text":"Leftovers: 324g"
+                        }
+                        ]
+                }
+                ]
+          },
+          {
+                  "type": "Input.ChoiceSet",
+                  "id": "portion",
+                  "style": "compact",
+                  "value": "1",
+                  "choices": [
+                              {
+                                  "title": "Reduce Portion",
+                                  "value": "1"
+                              },
+                              {
+                                  "title": "Maintain Portion",
+                                  "value": "2"
+                              },
+                              {
+                                  "title": "Increase Portion",
+                                  "value": "3"
+
+                              }
+                          ]
+          },
+          {
+            "type": "ColumnSet",
+            "columns":[
+                {
+                    "items":[
+                        {
+                            "type":"TextBlock",
+                            "text":"Meals: 5"
+                        }
+                        ]
+                },
+                {
+                    "items":[
+                        {
+                            "type":"TextBlock",
+                            "text":"Avg Cal/meal: 630kcal"
+                        }
+                        ]
+                }
+                ]
+          },
+          {
+            "type":"TextBlock",
+            "text":"How was this week's food?"
+          },
+          {
+            "type": "Input.ChoiceSet",
+            "id": "feedback",
+            "style": "expanded",
+            "choices": [
+              {
+                "title": "Excellent",
+                "value": "excellent"
+              },
+              {
+                "title": "Okay",
+                "value": "okay"
+              },
+              {
+                "title": "Needs improvement",
+                "value": "bad"
+              }
+            ]
+          },
+          {
+            "type": "Input.Text",
+            "id": "remarks",
+            "isMultiline": true,
+            "placeholder": "Any other remarks?"
+          }
+        ],
+        "actions":
+          {
+          "type": "Action.Submit",
+          "data": {
+            "type": "feedbackSubmit"
+          },
+          "title": "Submit"
+          }
+      }
+    });
+    bot.send(msg);
+    // if (session.message && session.message.value) {
+    //     // A Card's Submit Action obj was received
+    //     processSubmitAction(session, session.message.value);
+    // }
+}
+
+function processSubmitAction(session, value){
+  var defaultErrorMessage = 'Please select your portion size';
+    switch (value.type) {
+        case 'feedbackSubmit':
+            // Search, validate parameters
+            session.userData.portion = value.portion;
+            if (value.feedback) {
+                session.userData.remarks = value.feedback;
+            }
+            if (value.remarks){
+                session.userData.remarks = value.remarks;
+            }
+            break;
+        default:
+            // A form data was received, invalid or incomplete since the previous validation did not pass
+            session.send(defaultErrorMessage);
+    }
+}
+
+function sendWeek2(address) {
+    var msg = new builder.Message().address(address)
+    .addAttachment(
+      {
+      contentType: "application/vnd.microsoft.card.adaptive",
+      content: {
+        "type": "AdaptiveCard",
+        "version": "1.0",
+        "body": [
+          {
+            "type": "TextBlock",
+            "text": "Your Week in Review",
+            "size": "large",
+            "weight": "bolder"
+          },
+          {
+            "type": "TextBlock",
+            "text": "Congratulations, you reduced food waste by 20% this week!"
+          },
+          {
+            "type": "ColumnSet",
+            "columns":[
+                {
+                  "items":[
+                    {
+                      "type":"TextBlock",
+                      "text":"Rank: Amazonian (top 5%)"
+                    }
+                  ]
+                },
+                {
+                  "items":[
+                    {
+                      "type":"TextBlock",
+                      "text":"Food wasted: 34g"
+                    }
+                  ]
+                }
+              ]
+          },
+          {
+            "type": "Input.ChoiceSet",
+            "id": "CompactSelectVal",
+            "style": "compact",
+            "value": "2",
+            "choices": [
+              {
+                "title": "Reduce Portion",
+                "value": "1"
+              },
+              {
+                "title": "Maintain Portion",
+                "value": "2"
+              },
+              {
+                "title": "Increase Portion",
+                "value": "3"
+              }
+            ]
+          },
+          {
+            "type": "ColumnSet",
+            "columns":[
+                {
+                  "items":[
+                    {
+                      "type":"TextBlock",
+                      "text":"Meals: 5"
+                    }
+                  ]
+                },
+                {
+                  "items":[
+                    {
+                      "type":"TextBlock",
+                      "text":"Avg Cal/meal: 630kcal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type":"TextBlock",
+              "text":"How was this week's food?"
+            },
+            {
+              "type": "Input.ChoiceSet",
+              "id": "feedback",
+              "style": "rating",
+              "choices": [
+                {
+                  "title": "Excellent",
+                  "value": "excellent"
+                },
+                {
+                  "title": "Okay",
+                  "value": "okay"
+                },
+                {
+                  "title": "Needs improvement",
+                  "value": "bad"
+                }
+              ]
+            },
+            {
+              "type": "Input.Text",
+              "id": "remarks",
+              "isMultiline": true,
+              "placeholder": "Any other remarks?"
+            }
+          ],
+          "actions":
+          {
+            "type": "Action.Submit",
+            "data":{
+              "type":"feedbackSubmit"
+            },
+            "title": "Submit"
+          }
+        }
+    });
     bot.send(msg);
 }
 
 //bad code
 var badsave;
 
-bot.dialog('/rm', function(session, args) {
+bot.dialog('/rememberme', function(session, args) {
     var savedAddress = session.message.address;
     badsave = savedAddress;
     // (Save this information somewhere that it can be accessed later, such as in a database, or session.userData)
